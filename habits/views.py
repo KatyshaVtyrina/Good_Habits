@@ -17,6 +17,13 @@ class HabitListAPIView(generics.ListAPIView):
     pagination_class = HabitPaginator
 
 
+class HabitPublicListAPIView(generics.ListAPIView):
+    """Просмотр публичных привычек"""
+    queryset = Habit.objects.all().filter(is_public=True)
+    serializer_class = HabitSerializer
+    pagination_class = HabitPaginator
+
+
 class HabitDetailAPIView(generics.RetrieveAPIView):
     """Просмотр детальной информации о привычке"""
     serializer_class = HabitSerializer
