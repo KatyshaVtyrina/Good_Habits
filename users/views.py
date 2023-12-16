@@ -1,3 +1,15 @@
-from django.shortcuts import render
+from django.contrib.auth.hashers import make_password
+from rest_framework import generics
 
-# Create your views here.
+from users.models import User
+from users.serializers import UserSerializer
+
+
+class UserRegisterApiView(generics.CreateAPIView):
+
+    serializer_class = UserSerializer
+
+    def perform_create(self, serializer):
+        """Хеширование пароля"""
+        password = serializer.validated_data['password']
+        serializer.save(password=make_password(password))
