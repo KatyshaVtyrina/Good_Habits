@@ -1,9 +1,11 @@
-from rest_framework import generics
+from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 from habits.models import Habit
 from habits.permissions import IsUser
 from habits.serializers import HabitSerializer
+from habits.services import Reminder
 from paginators import HabitPaginator
 
 
@@ -11,6 +13,16 @@ class HabitCreateAPIView(generics.CreateAPIView):
     """Создание привычки"""
     serializer_class = HabitSerializer
     permission_classes = [IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        instance = Habit.objects.get(id=serializer.data['id'])
+        reminder = Reminder(instance)
+        reminder.create_reminder()
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def perform_create(self, serializer):
         """Автоматическое сохранение владельца при создании объекта"""
