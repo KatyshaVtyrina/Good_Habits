@@ -1,25 +1,10 @@
-from datetime import datetime, timedelta
 
-from habits.models import Habit
-import json
+from django_celery_beat.models import PeriodicTask, CrontabSchedule
 
-from django_celery_beat.models import PeriodicTask, \
-    IntervalSchedule, CrontabSchedule
-
-
-# class Reminder:
-#     """Класс, описывающий расписание отправки напоминаний о привычке"""
-#
-#     def __init__(self, habit: Habit):
-#         self.habit = habit
 
 def create_reminder(habit):
+    """Создание расписания и задачи"""
     # Создаем расписание
-    # schedule, created = IntervalSchedule.objects.get_or_create(
-    #     every=habit.periodicity,
-    #     period=IntervalSchedule.DAYS,
-    # )
-
     schedule, created = CrontabSchedule.objects.get_or_create(
         minute=habit.time.minute,
         hour=habit.time.hour,
@@ -35,5 +20,16 @@ def create_reminder(habit):
         name=f'send_telegram_message_{habit.id}',
         task='habits.tasks.send_telegram_message',
         args=[habit.id],
-        # kwargs=json.dumps({'habit_id': self.habit.id}),
     )
+
+
+def delete_reminder(habit):
+    """Удаление задачи"""
+    task_name = f'send_telegram_message_{habit.id}'
+    PeriodicTask.objects.filter(name=task_name).delete()
+
+
+def update_reminder(habit):
+    """Обновление задачи"""
+    delete_reminder(habit)
+    create_reminder(habit)
