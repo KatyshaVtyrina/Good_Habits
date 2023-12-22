@@ -26,6 +26,7 @@ def create_reminder(habit):
         day_of_month=f'*/{habit.periodicity}',
         month_of_year='*',
         day_of_week='*',
+        timezone='Europe/Moscow'
     )
 
     # Создаем задачу для повторения
