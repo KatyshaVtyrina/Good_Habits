@@ -69,7 +69,7 @@ CREATE DATABASE habits;
 DB_USER=имя пользователя (postgres)
 DB_PASSWORD=пароль
 DB_NAME=название базы данных (habits)
-SECRET_KEY=секретный ключ
+SECRET_KEY=секретный ключ Django
 TELEGRAM_BOT_API_KEY=токен для обращения к API Telegram-бота
 
 ```
@@ -80,8 +80,14 @@ TELEGRAM_BOT_API_KEY=токен для обращения к API Telegram-бот
 ```bash
 python manage.py migrate
 ```
+### Шаг 7: Создание суперпользователя
+! Использовать только для admin !
+Выполнить команду
+```bash
+python manage.py csu
+```
 
-### Шаг 7: Установка и настройка Redis
+### Шаг 8: Установка и настройка Redis
 1. Установить
 ```bash
 brew install redis
@@ -90,19 +96,19 @@ brew install redis
 ```bash
 redis-server
 ```
-### Шаг 8: Запуск celery
+### Шаг 9: Запуск celery
 1. Открыть новое окно терминала
 2. Из каталога проекта запустить celery командой
 ```bash
 celery -A config worker -l info
 ```
-### Шаг 9: Запуск celery-beat
+### Шаг 10: Запуск celery-beat
 1. Открыть новое окно терминала
 2. Из каталога проекта запустить celery командой
 ```bash
 celery -A config beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
 ```
-### Шаг 10: Запуск сервера Django
+### Шаг 11: Запуск сервера Django
 1. Открыть новое окно терминала
 
 2. Запустить сервер
@@ -116,6 +122,10 @@ python manage.py runserver
 ```bash
  coverage3 run --source='.' manage.py test
 ```
+### Результат покрытия тестами лежит в корне проекта
+```bash
+ coverage_result.png
+```
 
 ## Просмотр документации
 ### Swagger
@@ -126,6 +136,8 @@ http://127.0.0.1:8000/swagger/
 ```bash
 http://127.0.0.1:8000/redoc/
 ```
+
+
 ## Работа с сервисом через Postman
 
 1. Зарегистрироваться
@@ -149,17 +161,42 @@ body: {
 
 3. Подключить авторизацию по токену
 
-4. Создать привычку
+### Эндпоинты:
+1) Создание привычки
 ```bash
 POST: http://localhost:8000/habits/create/
 body: {
+    "related_habit": null,
     "place": "Дом",
     "time": "19:51:00",
     "action": "Приседания",
     "is_pleasant": true,
     "periodicity": 1,
-    "time_to_complete": "00:01:30"
+    "reward": null,
+    "time_to_complete": "00:01:30", 
+    "is_public": false
   } 
+  
+      *related_habit, reward, is_public - необязательны для заполнения 
 ```
-
-
+2) Просмотр детальной информации о привычке
+```bash
+GET: http://localhost:8000/habits/<id_привычки>/
+```
+3) Просмотр всех привычек
+```bash
+GET: http://localhost:8000/habits/
+```
+4) Просмотр публичных привычек
+```bash
+GET: http://localhost:8000/habits/public/
+```
+5) Редактирование привычки
+```bash
+PUT: http://localhost:8000/habits/<id_привычки>/
+PATCH: http://localhost:8000/habits/<id_привычки>/
+```
+6) Удаление привычки
+```bash
+DELETE: http://localhost:8000/habits/<id_привычки>/
+```
