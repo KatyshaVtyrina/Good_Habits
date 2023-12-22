@@ -6,9 +6,8 @@ from habits.models import Habit
 
 
 @shared_task
-def send_telegram_message(habit_id):
-    # print(habit_id[0])
-    habit = Habit.objects.get(pk=habit_id)
+def send_telegram_message(*args, **kwargs):
+    habit = Habit.objects.get(pk=args[0])
 
     requests.post(
         url=f'{settings.TELEGRAM_URL}{settings.TELEGRAM_BOT_API_KEY}/sendMessage',
