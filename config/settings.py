@@ -161,8 +161,8 @@ SIMPLE_JWT = {
 CORS_ALLOWED_ORIGINS = ['http://localhost:8000']
 CORS_ALLOW_ALL_ORIGINS = False
 
-CELERY_BROKER_URL = "redis://127.0.0.1:6379/0"
-CELERY_RESULT_BACKEND = "redis://127.0.0.1:6379/0"
+CELERY_BROKER_URL = "redis://127.0.0.1:6379"
+CELERY_RESULT_BACKEND = "redis://127.0.0.1:6379"
 # CELERY_BEAT_SCHEDULE = {
 #     'send_telegram_message':
 #         {
