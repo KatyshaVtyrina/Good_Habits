@@ -66,12 +66,20 @@ CREATE DATABASE habits;
 
 3. Записать в файл следующие настройки
 ```bash
-DB_USER=имя пользователя (postgres)
-DB_PASSWORD=пароль
-DB_NAME=название базы данных (habits)
 SECRET_KEY=секретный ключ Django
+POSTGRES_DB=название базы данных (habits)
+POSTGRES_USER=имя пользователя (postgres)
+POSTGRES_PASSWORD=пароль
+POSTGRES_HOST=хост (localhost) 
+POSTGRES_PORT=5432
+CELERY_BROKER_URL = "redis://127.0.0.1:6379/0"
+CELERY_RESULT_BACKEND = "redis://127.0.0.1:6379/0"
 TELEGRAM_BOT_API_KEY=токен для обращения к API Telegram-бота
 
+# через Docker
+POSTGRES_HOST = db
+CELERY_BROKER_URL="redis://redis:6379/0"
+CELERY_RESULT_BACKEND="redis://redis:6379/0"
 ```
 *В проекте есть шаблон файла .env - `.env_example`
 
@@ -127,16 +135,23 @@ python manage.py runserver
  coverage_result.png
 ```
 
-## Просмотр документации
-### Swagger
-```bash
-http://127.0.0.1:8000/swagger/
-```
-### Redoc
-```bash
-http://127.0.0.1:8000/redoc/
-```
 
+## Работа с проектом с помощью Docker
+
+1. Выполнить Шаги 1 и 5 Подготовки к проекту
+2. Чтобы создать образ и запустить проект, выполнить команду в терминале
+```bash
+docker-compose up --build  
+```
+3. Создание суперпользователя
+! Использовать только для admin !
+```bash
+docker-compose exec app python3 manage.py csu
+```
+4. Запуск тестов 
+```bash
+docker-compose exec app coverage3 run --source='.' manage.py test
+```
 
 ## Работа с сервисом через Postman
 
@@ -158,8 +173,8 @@ body: {
   "password": <пароль>
   }
 ```
-
 3. Подключить авторизацию по токену
+
 
 ### Эндпоинты:
 1) Создание привычки
@@ -199,4 +214,24 @@ PATCH: http://localhost:8000/habits/<id_привычки>/
 6) Удаление привычки
 ```bash
 DELETE: http://localhost:8000/habits/<id_привычки>/
+```
+
+## Просмотр документации
+### Swagger
+```bash
+http://127.0.0.1:8000/swagger/
+```
+### Redoc
+```bash
+http://127.0.0.1:8000/redoc/
+
+```
+## Просмотр документации c помощью Docker
+### Swagger
+```bash
+http://localhost:8000/swagger/
+```
+### Redoc
+```bash
+http://localhost:8000/redoc/
 ```
